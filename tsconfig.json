@@ -1,0 +1,40 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "baseUrl": "./",
+    "outDir": "./dist/out-tsc",
+    "sourceMap": true,
+    "declaration": false,
+    "downlevelIteration": true,
+    "experimentalDecorators": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "importHelpers": true,
+    "target": "es2015",
+    "typeRoots": [
+      "node_modules/@types"
+    ],
+    "lib": [
+      "es2018",
+      "dom"
+    ],
+    "paths": {
+      "@nxl/seed-lib": [
+        "dist/nxl/seed-lib"
+      ],
+      "@nxl/seed-lib/*": [
+        "dist/nxl/seed-lib/*"
+      ],
+      "@nxl/auth-lib": [
+        "dist/nxl/auth-lib"
+      ],
+      "@nxl/auth-lib/*": [
+        "dist/nxl/auth-lib/*"
+      ]
+    }
+  },
+  "angularCompilerOptions": {
+    "fullTemplateTypeCheck": true,
+    "strictInjectionParameters": true
+  }
+}
