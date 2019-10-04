@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Inject } from '@angular/core';
 import { of } from 'rxjs';
 import {
   map,
@@ -17,39 +17,33 @@ import { Router } from '@angular/router';
 
 @Injectable()
 export class AuthEffects {
-  tenantConfig = {
-    tenant: 'nxlseed.onmicrosoft.com',
-    clientID: 'f6a0bc85-cdd2-4425-a5eb-bd24698c2c26',
-    signInUpPolicy: 'B2C_1_signupsignin1',
-    signUpPolicy: 'B2C_1_signupsignin1',
-    passwordResetPolicy: 'B2C_1_PwdReset_1',
-    redirectUri: 'http://localhost:4200',
-    b2cScopes: [
-      'https://nxlseed.onmicrosoft.com/test/demo.read',
-      'https://nxlseed.onmicrosoft.com/test/demo.write' // ,
-      // 'https://nxlseed.onmicrosoft.com/test/user_impersonation'
-    ]
-  };
+  clientID = this.env.defaults.tenantConfig.clientID;
+  b2cURL = this.env.defaults.tenantConfig.b2cURL;
+  tenant = this.env.defaults.tenantConfig.tenant;
+  signInUpPolicy = this.env.defaults.tenantConfig.signUpPolicy;
+  passwordResetPolicy = this.env.defaults.tenantConfig.passwordResetPolicy;
 
   // B2C SignIn SignUp Policy Configuration
   clientApplication = new Msal.UserAgentApplication(
-    this.tenantConfig.clientID,
-    `https://login.microsoftonline.com/tfp/${this.tenantConfig.tenant}/${this.tenantConfig.signInUpPolicy}`,
+    this.clientID,
+    `${this.b2cURL}${this.tenant}/${this.signInUpPolicy}`,
     (errorDesc: any, token: any, error: any, tokenType: any) => {}
   );
 
   // B2C Password Reset Policy Configuration
   clientApplicationPasswordReset = new Msal.UserAgentApplication(
-    this.tenantConfig.clientID,
-    `https://login.microsoftonline.com/tfp/${this.tenantConfig.tenant}/${this.tenantConfig.passwordResetPolicy}`,
+    this.clientID,
+    `${this.b2cURL}${this.tenant}/${this.passwordResetPolicy}`,
     (errorDesc: any, token: any, error: any, tokenType: any) => {}
   );
+
 
   constructor(
     private actions$: Actions,
     private msalService: authServices.MsalService,
     private tokenServices: authServices.TokenService,
-    private router: Router
+    private router: Router,
+    @Inject('env') private env
   ) {}
 
   // Login

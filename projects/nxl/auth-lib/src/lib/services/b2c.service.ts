@@ -1,8 +1,8 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Inject } from '@angular/core';
 import { Router } from '@angular/router';
 import * as Msal from 'msal';
 import { Observable, of, from } from 'rxjs';
-// import { AuthUser } from '../models/auth-user.model';
+
 // npm install @azure/msal-angular --save
 // wrapper library to authenticate users in AD, tied to B2C scopes
 
@@ -15,39 +15,29 @@ OAuth Implicit Grants, by design, do not support/return a Refresh Token:
 
 @Injectable()
 export class MsalService {
-  constructor(private router: Router) {}
-
-  tenantConfig = {
-    tenant: 'nxlseed.onmicrosoft.com',
-    clientID: 'f6a0bc85-cdd2-4425-a5eb-bd24698c2c26',
-    signInUpPolicy: 'B2C_1_signupsignin1',
-    signUpPolicy: 'B2C_1_signupsignin1',
-    passwordResetPolicy: 'B2C_1_PwdReset_1',
-    redirectUri: 'http://localhost:4200',
-    b2cScopes: [
-      'https://nxlseed.onmicrosoft.com/test/demo.read',
-      'https://nxlseed.onmicrosoft.com/test/demo.write',
-      'https://nxlseed.onmicrosoft.com/test/user_impersonation'
-    ]
-  };
+  constructor(private router: Router, @Inject('env') private env) {
+    console.log('defaults', this.env);
+  }
+  b2cScopes = this.env.defaults.tenantConfig.b2cScopes;
+  passwordResetErrorCode = this.env.defaults.tenantConfig.passwordResetErrorCode;
 
 
   loginPopup(clientApp: Msal.UserAgentApplication) {
-    return from(clientApp.loginPopup(this.tenantConfig.b2cScopes));
+    return from(clientApp.loginPopup(this.b2cScopes));
   }
 
   acquireTokenSilent(clientApp: Msal.UserAgentApplication) {
-    return from(clientApp.acquireTokenSilent(this.tenantConfig.b2cScopes));
+    return from(clientApp.acquireTokenSilent(this.b2cScopes));
   }
 
   acquireTokenPopup(clientApp: Msal.UserAgentApplication) {
-    return from(clientApp.acquireTokenPopup(this.tenantConfig.b2cScopes));
+    return from(clientApp.acquireTokenPopup(this.b2cScopes));
   }
 
   checkErrorCode(error: string): Observable<boolean> {
     console.log('error: ', error);
     // password reset error code:
-    if (error.indexOf('AADB2C90118') > -1) {
+    if (error.indexOf(this.passwordResetErrorCode) > -1) {
       return of(true);
     } else {
       return of(false);

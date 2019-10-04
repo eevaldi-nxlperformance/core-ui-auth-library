@@ -21,12 +21,13 @@ import { AppRoutingModule } from './app-routing.module';
 import { HomeComponent } from './home/home.component';
 import { CommonModule } from '@angular/common';
 
+import { environment } from '../environments/environment';
 
-// this would be done dynamically with webpack for builds
-const environment = {
-  development: true,
-  production: false
-};
+// // this would be done dynamically with webpack for builds
+// const environment = {
+//   development: true,
+//   production: false
+// };
 
 const rootReducer = {
   router: routerReducer,
@@ -47,7 +48,7 @@ const rootReducer = {
     EffectsModule.forRoot(seedStore.effects),
     EffectsModule.forRoot(authStore.effects),
     StoreRouterConnectingModule.forRoot(),
-    environment.development ? StoreDevtoolsModule.instrument() : []
+    !environment.production ? StoreDevtoolsModule.instrument() : []
   ],
   providers: [
     {
@@ -59,7 +60,8 @@ const rootReducer = {
       provide: HTTP_INTERCEPTORS,
       useClass: authStore.Error401Interceptor,
       multi: true
-    }
+    },
+    { provide: 'env', useValue: environment }
   ],
   bootstrap: [AppComponent]
 })
